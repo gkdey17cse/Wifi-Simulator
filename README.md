@@ -53,6 +53,9 @@ WiFiSimulator/
 │   ├── WiFi5Simulator.hpp  # WiFi 5-specific header
 │   ├── WiFi6Simulator.hpp  # WiFi 6-specific header
 │   ├── AccessPoint.hpp     # Access Point abstraction
+|   ├── Channel.hpp         # Channel abstraction
+│   ├── Packet.hpp          # Packet abstraction
+|   ├── User.hpp            # User abstraction
 │
 ├── src/                    # Source files
 │   ├── Simulator.cpp       # Base class implementation
@@ -61,14 +64,19 @@ WiFiSimulator/
 │   ├── WiFi6Simulator.cpp  # WiFi 6-specific implementation
 │   ├── AccessPoint.cpp     # Access Point implementation
 │   └── main.cpp            # Entry point for the simulator
+│   ├── User.cpp            # User Class implementation
+│   └── Packet.cpp          # Packet Class implementation
+│   ├── Channel.cpp         # Channel Class implementation
 │
 ├── build/                  # Compiled object files and executable
 │   ├── *.o                 # Object files
-│   └── WiFiSimulator       # Final executable
+│   └── WiFiSimulator_opt   # Final executable
+│   └── WiFiSimulator_debug # Final debug file
 │
 ├── Makefile                # Build configuration
-├── README.md               # Documentation (this file)
-└── LICENSE                 # Licensing information (if applicable)
+└── README.md               # Documentation (this file)
+
+````
 
 ## Compilation and Execution Using Makefile
 
