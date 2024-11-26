@@ -87,7 +87,7 @@ The `Makefile` automates the compilation process for both debug and optimized bu
 1. Compile all debug and optimized binaries:
    ```bash
    make
-````
+    ````
 
 ### To Run Files
 
