@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
+#include <stdexcept> // For std::invalid_argument
 
 WiFi6Simulator::WiFi6Simulator(int numUsers, int bandwidth)
     : Simulator(numUsers, bandwidth), subChannelWidth(4) // Default to 4 MHz
@@ -18,7 +19,7 @@ double WiFi6Simulator::calculateThroughput()
     int numSubChannels = accessPoint.getBandwidth() / subChannelWidth;
     int numFrames = (numUsers + numSubChannels - 1) / numSubChannels; // Ceiling division
 
-    double totalTime = numFrames * frameDuration; // Total simulation time in ms
+    double totalTime = numFrames * frameDuration;    // Total simulation time in ms
     return (totalData / (totalTime / 1000.0)) / 1e6; // Throughput in Mbps
 }
 
@@ -33,11 +34,10 @@ void WiFi6Simulator::runSimulation()
     std::cout << "Enter sub-channel width (2 MHz, 4 MHz, or 10 MHz): ";
     std::cin >> userInputSubChannelWidth;
 
-    // Validate the input
+    // Validate the input and throw an exception for invalid widths
     if (userInputSubChannelWidth != 2 && userInputSubChannelWidth != 4 && userInputSubChannelWidth != 10)
     {
-        std::cout << "Invalid sub-channel width. Defaulting to 4 MHz.\n";
-        subChannelWidth = 4;
+        throw std::invalid_argument("Invalid sub-channel width! Only 2 MHz, 4 MHz, or 10 MHz are allowed.");
     }
     else
     {
