@@ -7,20 +7,26 @@ INCLUDE_DIR = include
 SRC_DIR = src
 BUILD_DIR = build
 
-# Target executable
-TARGET = $(BUILD_DIR)/WiFiSimulator
+# Target executables
+DEBUG_TARGET = $(BUILD_DIR)/WiFiSimulator_debug
+OPTIMIZED_TARGET = $(BUILD_DIR)/WiFiSimulator_opt
 
 # Source files
 SRC_FILES = $(wildcard $(SRC_DIR)/*.cpp)
 OBJ_FILES = $(SRC_FILES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 
-# Default target
-all: $(TARGET)
+# Default target: Build both debug and optimized binaries
+all: $(DEBUG_TARGET) $(OPTIMIZED_TARGET)
 
-# Build the target executable
-$(TARGET): $(OBJ_FILES)
+# Build the optimized binary
+$(OPTIMIZED_TARGET): $(OBJ_FILES)
 	@mkdir -p $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(CXX) $(CXXFLAGS) -O3 $^ -o $@
+
+# Build the debug binary
+$(DEBUG_TARGET): $(OBJ_FILES)
+	@mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -g $^ -o $@
 
 # Compile source files to object files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
@@ -29,15 +35,7 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 # Clean build artifacts
 clean:
-	rm -rf $(BUILD_DIR) $(TARGET)
-
-# Debug build
-debug: CXXFLAGS += -g
-debug: clean all
-
-# Optimized build
-optimized: CXXFLAGS += -O3
-optimized: clean all
+	rm -rf $(BUILD_DIR)
 
 # Phony targets
-.PHONY: all clean debug optimized
+.PHONY: all clean
