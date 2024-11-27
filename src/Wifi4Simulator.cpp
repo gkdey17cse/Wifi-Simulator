@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <queue>
+#include <map>
 #include <vector>
 #include <functional>
 
@@ -15,17 +16,16 @@ double WiFi4Simulator::calculateThroughput()
     if (timestamps.empty())
         return 0.0;
 
-    double totalData = timestamps.size() * 8192;      // Total data in bits
-    double totalTime = timestamps.back() / 1000.0;   // Total time in seconds
+    double totalData = timestamps.size() * 8192;                  // Total data in bits
+    double totalTime = timestamps.back() / 1000.0;                // Total time in seconds
     return (totalTime > 0) ? (totalData / totalTime) / 1e6 : 0.0; // Throughput in Mbps
 }
 
-
 void WiFi4Simulator::runSimulation()
 {
-    std::cout << "===========================================\n";
-    std::cout << "     WiFi 4 Simulator with CSMA/CA      \n";
-    std::cout << "===========================================\n";
+    std::cout << "WiFi 4 Simulator: CSMA/CA Protocol Simulation\n";
+    std::cout << "All users arrive at t = 0 ms.\n";
+    std::cout << "--------------------------------------------------\n";
 
     srand(static_cast<unsigned int>(time(nullptr))); // Seed for random backoff times
 
@@ -36,52 +36,98 @@ void WiFi4Simulator::runSimulation()
     double currentTime = 0.0;         // Simulation clock in ms
     double transmissionTime = 0.0614; // Transmission time for a 1 KB packet (based on 133.33 Mbps)
 
-    // Priority queue to manage users based on their backoff times
-    using UserBackoff = std::pair<double, int>; // Pair of <backoff time, user ID>
-    std::priority_queue<UserBackoff, std::vector<UserBackoff>, std::greater<>> backoffQueue;
+    // Map to track backoff times for users
+    std::map<int, double> userBackoffMap;
 
     // Initialize backoff times for all users
     for (int i = 0; i < numUsers; i++)
     {
-        double initialBackoff = (i == 0) ? 0.0 : (rand() % 10 + 1); // User 0 has no backoff
-        backoffQueue.push({initialBackoff, i});
+        double backoffTime = (i == 0) ? 0.0 : (rand() % 10 + 1); // User 0 has no backoff
+        userBackoffMap[i] = backoffTime;
+        std::cout << "User " << i << " assigned backoff time: " << backoffTime << " ms.\n";
     }
 
-    // Process users
-    while (!backoffQueue.empty())
-    {
-        auto [backoffTime, user] = backoffQueue.top();
-        backoffQueue.pop();
+    std::cout << "--------------------------------------------------\n";
 
-        if (currentTime < backoffTime)
+    // Process users until all have transmitted successfully
+    while (!userBackoffMap.empty())
+    {
+        // Find the minimum backoff time
+        double minBackoffTime = std::numeric_limits<double>::max();
+        for (const auto &[userId, backoffTime] : userBackoffMap)
         {
-            // Wait until the backoff time
-            std::cout << "User " << user << " waiting with backoff time: " << backoffTime
-                      << " ms. Current time: " << currentTime << " ms.\n";
-            currentTime = backoffTime;
+            minBackoffTime = std::min(minBackoffTime, backoffTime);
         }
 
-        // Transmit data
-        currentTime += transmissionTime;
-        latencies.push_back(currentTime);  // Log latency
-        timestamps.push_back(currentTime); // Log successful transmission time
-        std::cout << "User " << user << " transmitted successfully at time " << currentTime << " ms.\n";
+        // Identify users with the minimum backoff time
+        std::vector<int> usersWithMinBackoff;
+        for (const auto &[userId, backoffTime] : userBackoffMap)
+        {
+            if (backoffTime == minBackoffTime)
+                usersWithMinBackoff.push_back(userId);
+        }
+
+        if (usersWithMinBackoff.size() > 1)
+        {
+            // Collision detected
+            std::cout << "Collision detected! Users ";
+            for (size_t i = 0; i < usersWithMinBackoff.size(); ++i)
+            {
+                std::cout << usersWithMinBackoff[i];
+                if (i < usersWithMinBackoff.size() - 1)
+                    std::cout << ", ";
+            }
+            std::cout << " have the same backoff time: " << minBackoffTime << " ms.\n";
+
+            // Transmit for the first user
+            int transmittingUser = usersWithMinBackoff[0];
+            currentTime = std::max(currentTime, minBackoffTime);
+            std::cout << "User " << transmittingUser << " transmitted successfully at time " << currentTime << " ms.\n";
+
+            currentTime += transmissionTime;
+            latencies.push_back(currentTime);
+            timestamps.push_back(currentTime);
+
+            // Retry for remaining users
+            for (size_t i = 1; i < usersWithMinBackoff.size(); ++i)
+            {
+                int retryUser = usersWithMinBackoff[i];
+                double newBackoff = currentTime + (rand() % 10 + 1);
+                userBackoffMap[retryUser] = newBackoff;
+                std::cout << "User " << retryUser << " retries with new backoff time: " << newBackoff << " ms.\n";
+            }
+
+            // Remove the transmitting user
+            userBackoffMap.erase(transmittingUser);
+        }
+        else
+        {
+            // Single user transmission
+            int user = usersWithMinBackoff[0];
+            currentTime = std::max(currentTime, minBackoffTime);
+            std::cout << "User " << user << " transmitted successfully at time " << currentTime << " ms.\n";
+
+            currentTime += transmissionTime;
+            latencies.push_back(currentTime);
+            timestamps.push_back(currentTime);
+
+            // Remove the transmitting user
+            userBackoffMap.erase(user);
+        }
     }
 
     // Calculate metrics
-    std::cout << "\n===============================\n";
-    std::cout << "           Simulation Results           \n";
-    std::cout << "===============================\n";
+    std::cout << "\nSimulation Results:\n";
     std::cout << "1. Throughput: " << calculateThroughput() << " Mbps\n";
     std::cout << "2. Average Latency: " << calculateAverageLatency() << " ms\n";
     std::cout << "3. Max Latency: " << calculateMaxLatency() << " ms\n";
 
     // Display timestamps
-    std::cout << "\n---: Timestamps of successful transmissions :---\n";
-    int userIndex = 0;
-    for (const auto &timestamp : timestamps) // Range-based loop
+    std::cout << "\nTimestamps of successful transmissions:\n";
+    std::cout << "{ ";
+    for (const auto &timestamp : timestamps)
     {
-        std::cout << "User " << userIndex++ << ": " << timestamp << " ms\n";
+        std::cout << "| " << timestamp << " ms | ";
     }
-    std::cout << "===============================\n";
+    std::cout << " }\n";
 }

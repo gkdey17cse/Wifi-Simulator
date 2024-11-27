@@ -8,8 +8,8 @@ SRC_DIR = src
 BUILD_DIR = build
 
 # Target executables
-DEBUG_TARGET = $(BUILD_DIR)/WiFiSimulator_debug
-OPTIMIZED_TARGET = $(BUILD_DIR)/WiFiSimulator_opt
+DEBUG_TARGET = $(BUILD_DIR)/Simulator_debug
+OPTIMIZED_TARGET = $(BUILD_DIR)/Simulator_opt
 
 # Source files
 SRC_FILES = $(wildcard $(SRC_DIR)/*.cpp)
