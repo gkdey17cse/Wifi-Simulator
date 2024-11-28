@@ -53,9 +53,9 @@ WiFiSimulator/
 │   ├── WiFi5Simulator.hpp  # WiFi 5-specific header
 │   ├── WiFi6Simulator.hpp  # WiFi 6-specific header
 │   ├── AccessPoint.hpp     # Access Point abstraction
-|   ├── Channel.hpp         # Channel abstraction
+│   ├── Channel.hpp         # Channel abstraction
 │   ├── Packet.hpp          # Packet abstraction
-|   ├── User.hpp            # User abstraction
+│   ├── User.hpp            # User abstraction
 │
 ├── src/                    # Source files
 │   ├── Simulator.cpp       # Base class implementation
@@ -63,21 +63,33 @@ WiFiSimulator/
 │   ├── WiFi5Simulator.cpp  # WiFi 5-specific implementation
 │   ├── WiFi6Simulator.cpp  # WiFi 6-specific implementation
 │   ├── AccessPoint.cpp     # Access Point implementation
-│   └── main.cpp            # Entry point for the simulator
+│   ├── main.cpp            # Entry point for the simulator
 │   ├── User.cpp            # User Class implementation
 │   └── Packet.cpp          # Packet Class implementation
 │   ├── Channel.cpp         # Channel Class implementation
 │
 ├── build/                  # Compiled object files and executable
 │   ├── *.o                 # Object files
-│   └── WiFiSimulator_opt   # Final executable
-│   └── WiFiSimulator_debug # Final debug file
+│   ├── Simulator_opt       # Final executable (optimized)
+│   ├── Simulator_debug     # Final debug executable
+│
+├── lib/                    # Libraries (static and shared)
+│   ├── libSimulator.a      # Static library
+│   ├── libSimulator.so     # Shared library
 │
 ├── Makefile                # Build configuration
 └── README.md               # Documentation (this file)
 
 ````
 
+### Clone the Repo
+
+1. To Clone this Project:
+   ```bash
+   https://github.com/gkdey17cse/OOPD_Project.git
+   ```
+
+   
 ## Compilation and Execution Using Makefile
 
 The `Makefile` automates the compilation process for both debug and optimized builds of all three parts of the system. Here’s how to use it:
@@ -105,13 +117,6 @@ The `Makefile` automates the compilation process for both debug and optimized bu
 1. Clean all debug and optimized binaries:
    ```bash
    make clean
-   ```
-
-### Clean Compiled Files
-
-1. To Clone this Project:
-   ```bash
-   https://github.com/gkdey17cse/OOPD_Project.git
    ```
 
 ## Note
