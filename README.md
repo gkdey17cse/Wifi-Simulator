@@ -93,11 +93,11 @@ The `Makefile` automates the compilation process for both debug and optimized bu
 
 1. To run debug version :
    ```bash
-   ./build/WiFiSimulator_debug
+   ./build/Simulator_debug
    ```
 2. To run Question1.cpp optimized version :
    ```bash
-   ./build/WiFiSimulator_opt
+   ./build/Simulator_opt
    ```
 
 ### Clean Compiled Files
@@ -107,8 +107,16 @@ The `Makefile` automates the compilation process for both debug and optimized bu
    make clean
    ```
 
+### Clean Compiled Files
+
+1. To Clone this Project:
+   ```bash
+   https://github.com/gkdey17cse/OOPD_Project.git
+   ```
+
 ## Note
 
 This project was developed with the assistance of OpenAI's ChatGPT and references from various open-source platforms. The insights, explanations, and code snippets provided by ChatGPT were instrumental in understanding and implementing the WiFi communication simulation. Additionally, open-source resources were used for ideas and inspiration in building this educational project.
 
 Special acknowledgment to OpenAI and the open-source community for their invaluable contributions and support.
+

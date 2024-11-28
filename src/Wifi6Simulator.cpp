@@ -14,12 +14,8 @@ double WiFi6Simulator::calculateThroughput()
     if (latencies.empty())
         return 0.0;
 
-    double totalData = latencies.size() * 8192.0; // Total data in bits (1 KB = 8192 bits per user)
-    double frameDuration = 5.0;                   // Duration of one frame in ms
-    int numSubChannels = accessPoint.getBandwidth() / subChannelWidth;
-    int numFrames = (numUsers + numSubChannels - 1) / numSubChannels; // Ceiling division
-
-    double totalTime = numFrames * frameDuration;    // Total simulation time in ms
+    double totalData = latencies.size() * 8192.0; // Total data in bits (1 KB = 8192 bits per packet)
+    double totalTime = timestamps.back();         // Total simulation time in ms
     return (totalData / (totalTime / 1000.0)) / 1e6; // Throughput in Mbps
 }
 
@@ -45,19 +41,22 @@ void WiFi6Simulator::runSimulation()
     }
 
     int numSubChannels = accessPoint.getBandwidth() / subChannelWidth;
-    double frameDuration = 5.0;
-    double dataRatePerSubChannel = (dataRate * subChannelWidth) / 20.0;
-    double transmissionTime = (8192.0 / (dataRatePerSubChannel * 1e6)) * 1000.0;
 
+    // Calculate the data rate per sub-channel
+    double dataRatePerSubChannel = (dataRate * subChannelWidth) / 20.0; // Mbps
     if (dataRatePerSubChannel <= 0)
     {
         std::cerr << "Error: Data rate per sub-channel is invalid. Exiting simulation.\n";
         return;
     }
 
+    // Calculate transmission time for 1 KB (8192 bits) packet
+    double transmissionTime = (8192.0 / (dataRatePerSubChannel * 1e6)) * 1000.0; // ms
+
     std::cout << "Total Bandwidth: " << accessPoint.getBandwidth() << " MHz\n";
     std::cout << "Sub-channel Width: " << subChannelWidth << " MHz\n";
-    std::cout << "Number of Sub-channels: " << numSubChannels << "\n\n";
+    std::cout << "Number of Sub-channels: " << numSubChannels << "\n";
+    std::cout << "Transmission Time per Packet: " << std::fixed << std::setprecision(4) << transmissionTime << " ms\n\n";
 
     latencies.clear();
     timestamps.clear();
@@ -82,7 +81,7 @@ void WiFi6Simulator::runSimulation()
                       << " at time " << std::fixed << std::setprecision(4) << latency << " ms.\n";
         }
 
-        currentTime += frameDuration;
+        currentTime += 5.0; // Move to the next frame (frame duration is 5 ms)
         usersRemaining -= usersInThisFrame;
     }
 
