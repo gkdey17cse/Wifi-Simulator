@@ -1,7 +1,7 @@
 #include "WiFi5Simulator.hpp"
 #include <iostream>
-#include <iomanip> // For formatting output
-#include <numeric> // For accumulate
+#include <iomanip>   // For formatting output
+#include <numeric>   // For accumulate
 #include <algorithm> // For max_element
 
 WiFi5Simulator::WiFi5Simulator(int numUsers, int bandwidth)
@@ -17,10 +17,10 @@ void WiFi5Simulator::runSimulation()
     std::cout << "Enter the number of packets each user wants to send: ";
     std::cin >> numPacketsPerUser;
 
-    double currentTime = 0.0; // Simulation clock in ms
-    double timeSlot = 15.0;   // Parallel communication phase duration in ms
-    double broadcastTime = 0.0614; // 1 KB packet transmission time
-    double csiTime = 0.012;        // 200-byte packet transmission time for CSI
+    double currentTime = 0.0;               // Simulation clock in ms
+    double timeSlot = 15.0;                 // Parallel communication phase duration in ms
+    double broadcastTime = 0.0614;          // 1 KB packet transmission time
+    double csiTime = 0.012;                 // 200-byte packet transmission time for CSI
     double packetTransmissionTime = 0.0614; // Time to send one data packet
 
     int totalPackets = numPacketsPerUser * numUsers;
@@ -49,9 +49,9 @@ void WiFi5Simulator::runSimulation()
         }
 
         // 3. Round-Robin Data Transmission
-        double parallelStartTime = currentTime; // Start time for the parallel communication
+        double parallelStartTime = currentTime;            // Start time for the parallel communication
         double timeSlotEnd = parallelStartTime + timeSlot; // End of the current time slot
-        bool slotExhausted = false; // Flag to track time slot exhaustion
+        bool slotExhausted = false;                        // Flag to track time slot exhaustion
 
         std::cout << std::setw(4) << "" << "Parallel communication started at time: "
                   << std::fixed << std::setprecision(4) << parallelStartTime << " ms\n";
@@ -113,8 +113,8 @@ void WiFi5Simulator::runSimulation()
 // Helper Functions for Metrics
 double WiFi5Simulator::calculateThroughput(int totalPackets, double totalTime)
 {
-    double totalData = totalPackets * 1.0; // 1 KB per packet
-    return (totalData * 8.0) / (totalTime / 1.0); // Convert ms to seconds for Mbps
+    double totalData = totalPackets * 1.0;                 // 1 KB per packet
+    return (totalData * 8.0 * 1024) / (totalTime / 0.001); // Convert ms to seconds for Mbps
 }
 
 double WiFi5Simulator::calculateAverageLatency()
